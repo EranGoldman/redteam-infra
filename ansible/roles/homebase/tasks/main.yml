@@ -83,3 +83,16 @@
   register: result
   failed_when: result.rc >= 2
 
+- name: Add system-wide UTC PS1 to /etc/bash.bashrc
+  blockinfile:
+    path: /etc/bash.bashrc
+    block: |
+      # System-wide UTC PS1 for all interactive shells
+      if [[ $- == *i* ]] && ! [ -n "${SUDO_USER}" -a -n "${SUDO_PS1}" ]; then
+          PROMPT_COMMAND='PS1="\[\e[36m\]$(TZ=UTC date "+%Y-%m-%d %H:%M:%S UTC")\[\e[0m\] ~ \
+      \[\e[32m\]\u@\h\[\e[0m\]:\
+      \[\e[31m\]\w\[\e[0m\]\$ "'
+      fi
+    marker: "# {mark} ANSIBLE UTC PS1"
+    create: yes
+    backup: yes
